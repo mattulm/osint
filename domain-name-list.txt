@@ -1,0 +1,7 @@
+https://spyeyetracker.abuse.ch/blocklist.php?download=domainblocklist
+https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
+https://palevotracker.abuse.ch/blocklists.php?download=domainblocklist
+
+http://vxvault.siri-urz.net/URL_List.php
+
+http://www.malware.pl/index.malware

@@ -1,0 +1,8 @@
+http://www.blade-defender.org/eval-lab/blade.csv
+	This list is old, and the hashes should be kept for archival sake only.
+http://vxvault.siri-urz.net/ViriList.php?s=40&m=500
+http://www.malwareblacklist.com/mbl.xml
+http://malwaredb.malekal.com/daily.zip
+	very large. last time i tried it was 7+ GB
+http://www.malware.pl/reports/c/8F57649DD79063D1B547F70F590639CFCN
+http://malc0de.com/database/
