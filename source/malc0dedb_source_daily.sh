@@ -35,10 +35,6 @@ sleep 13;
 wget --header="$HEADER" --user-agent="$UA22" "http://malc0de.com/database/?&page=2"
 sleep 13;
 wget --header="$HEADER" --user-agent="$UA21" "http://malc0de.com/database/?&page=3"
-sleep 13;
-wget --header="$HEADER" --user-agent="$UA22" "http://malc0de.com/database/?&page=4"
-sleep 13;
-wget --header="$HEADER" --user-agent="$UA21" "http://malc0de.com/database/?&page=5"
 #
 ######################################################
 # OK, let's sort through some files and pull our IPv4 
@@ -48,21 +44,34 @@ for i in *.html; do
 	cat $i | grep -a -o -e "[0-9a-f]\{32\}" >> malc0de_md5_working.txt
 done
 cat ipv4_blocklist_$TODAY.txt >> malc0de_ipv4_working.txt
-cat malc0de_ipv4_working.txt | sort | uniq >> malc0de_ipv4_$TODAY.txt
+cat malc0de_ipv4_working.txt | sed '/^#/ d' |  sed '/^// d' | sort | uniq >> malc0de_ipv4_$TODAY.txt
 cp malc0de_ipv4_$TODAY.txt /tmp/osint/ipv4/malc0de_ipv4_$TODAY.txt
 #
+# Set up the hosts file for Windows.
+cat domain_blocklist_$TODAY.txt | awk -F ' ' '{print $2}' >> domain_hosts_working_$TODAY.txt 
 #
-cp domain_blocklist_$TODAY.txt /tmp/osint/domains/malc0de_domains_$TODAY.txt
+# Filter out some domains that always seem to show up.
+domains1=(sun.com google.com baidu.com )
+domainsedelman=(edelman.com edelmandigital.com)
+cat domain_hosts_working_$TODAY.txt | grep -v "sun.com" | grep -v "googleapis.com" | grep -v "google.com" | grep -v "edelman.com" >> domain_hosts_filter_$TODAY.txt
+cp domain_hosts_filter_$TODAY.txt domain_hosts_$TODAY.txt
+cp domain_hosts_$TODAY.txt /tmp/osint/rules/malc0de_domains_$TODAY.txt
+#
+while read i; do
+	echo "127.0.0.1     www.$i, $i "; >> malc0de_hosts_$TODAY.txt
+done < domain_hosts_$TODAY.txt 
+cp malc0de_hosts_$TODAY.txt /tmp/osint/rules/malc0de_hosts_$TODAY.txt
 #
 ###########################################################
 # Grab some MD5 hashes from the files while we are at it
 while read i; do
         # malc0de
         echo " Checking the malc0de database for ..... $i"
-        wget "http://malc0de.com/database/index.php?search=$i" -O malc0de_md5_$i.html
+        wget "http://malc0de.com/database/index.php?search=$i" -O "malc0de_md5_$i.html"
         sleep 20;
         echo " "
 done < malc0de_ipv4_working.txt
+#find /tmp/osint/sources/malc0de -mtime +1 -type f -delete
 for i in malc0de_md5_*.html; do
 	cat $i | grep -a -o -e "[0-9a-f]\{32\}" >> malc0de_md5_working.txt
 done

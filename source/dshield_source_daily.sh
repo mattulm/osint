@@ -28,8 +28,8 @@ cd $SOURCES/dshield
 ###########################################################
 wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://www.dshield.org/ipsascii.html?limit=1000 -O dshield_ipsascii_$TODAY.txt
 sleep 13;
-wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://isc.sans.edu/feeds/suspiciousdomains_Medium.txt -O dshield_domains_$TODAY.txt
-sleep 13;
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://isc.sans.edu/feeds/suspiciousdomains_Medium.txt -O dshield_domains_working_$TODAY.txt
+sleep 15;
 wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://isc.sans.edu/feeds/suspiciousdomains_High.txt -O dshield_hostfile_$TODAY.txt
 sleep 13;
 wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://isc.sans.edu/block.txt -O dshield_netblocks_$TODAY.txt
@@ -40,10 +40,17 @@ cat dshield_ip_working.txt | sort | uniq >> dshield_ipv4_master_$TODAY.txt
 cp dshield_ipv4_master_$TODAY.txt /tmp/osint/ipv4/dshield_ipv4_$TODAY.txt
 #
 #
-cp dshield_domains_$TODAY.txt /tmp/osint/dshield_domains_$TODAY.txt
-cp dshield_hostfile_$TODAY.txt /tmp/osint/dshield_hostfile_$TODAY.txt
+cat dshield_domains_working_$TODAY.txt | sed '/^#/ d' >> dshield_domains_$TODAY.txt
+cp dshield_domains_$TODAY.txt /tmp/osint/domains/dshield_domains_$TODAY.txt
+cp dshield_domains_$TODAY.txt /tmp/osint/rules/dshiel/siem/$TODAY.txt
+#
+#
+cat dshield_hostfile_working_$TODAY.txt | sed '/^#/ d' >> dshield_hostfile_stripped_$TODAY.txt
+while read i; do
+        echo "127.0.0.1    $i" >> dshield_hostfile_$TODAY.txt
+done < dshield_hostfile_stripped_$TODAY.txt
+cp dshield_hostfile_$TODAY.txt /tmp/osint/rules/dshield_host_$TODAY.txt
 cp dshield_netblocks_$TODAY.txt /tmp/osint/ipv4/dshield_netblocks_$TODAY.txt
-
 
 
 #

@@ -31,7 +31,7 @@ wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/viruses" -O clean
 sleep 13;
 wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/phishing.php" -O cleanmx_phishing_$TODAY.txt
 sleep 13;
-wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/portals.php" -O cleanmx_portal_$TODAY.txt
+wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/portals.php" -O cleanmx_defaced_$TODAY.txt
 sleep 13;
 wget --user-agent="$UA21" "http://support.clean-mx.de/clean-mx/viruses.php" -O cleanmx_virus2_$TODAY.txt
 #
@@ -49,17 +49,51 @@ cp cleanmx_domains_malware_$TODAY.txt /tmp/osint/domains/cleanmx_domains_malware
 #####
 #
 cat cleanmx_phishing_$TODAY.txt | grep -E -o '(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)' | sort | uniq >> cleanmx_ipv4_phishing_$TODAY.txt
-cat cleanmx_phishing_$TODAY.txt | grep "follow up this domain (" | awk -F "[()]" '{ for (i=2; i<NF; i+=2) print $i }' >> cleanmx_domains_phishing_$TODAY.txt
+cat cleanmx_phishing_$TODAY.txt | grep "follow up this domain (" | awk -F "[()]" '{ for (i=2; i<NF; i+=2) print $i }' >> cleanmx_domains_phishing_working_$TODAY.txt
 cp cleanmx_ipv4_phishing_$TODAY.txt /tmp/osint/ipv4/cleanmx_ipv4_phishing_$TODAY.txt
+cat cleanmx_domains_phishing_working_$TODAY.txt | sort | uniq >> cleanmx_domains_phishing_$TODAY.txt
 cp cleanmx_domains_phishing_$TODAY.txt /tmp/osint/domains/cleanmx_domains_phishing_$TODAY.txt
 #
-cat cleanmx_portal_$TODAY.txt | grep -E -o '(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)' | sort | uniq >> cleanmx_ipv4_defaced_$TODAY.txt
-cat cleanmx_portal_$TODAY.txt | grep "follow up this domain (" | awk -F "[()]" '{ for (i=2; i<NF; i+=2) print $i }' >> cleanmx_domains_defaced_$TODAY.txt
+#####
+#
+cat cleanmx_defaced_$TODAY.txt | grep -E -o '(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)' | sort | uniq >> cleanmx_ipv4_defaced_$TODAY.txt
+cat cleanmx_defaced_$TODAY.txt | grep "follow up this domain (" | awk -F "[()]" '{ for (i=2; i<NF; i+=2) print $i }' >> cleanmx_domains_defaced_$TODAY.txt
 cp cleanmx_ipv4_defaced_$TODAY.txt /tmp/osint/ipv4/cleanmx_ipv4_defaced_$TODAY.txt
 cp cleanmx_domains_defaced_$TODAY.txt /tmp/osint/domains/cleanmx_domains_defaced_$TODAY.txt
 #
 #
 
+#
+#####
+#
+# Start the Windows Host File
+cat cleanmx_domains_malware_$TODAY.txt cleanmx_hosts_working_$TODAY.txt
+cat cleanmx_domains_phishing_$TODAY.txt cleanmx_hosts_working_$TODAY.txt
+cat cleanmx_hosts_working_$TODAY.txt | sort | uniq >> cleanmx_hosts_sort_$TODAY.txt
+while read i; do
+        echo "127.0.0.1     www.$i, $i "; >> cleanmx_hosts_$TODAY.txt
+done < cleanmx_hosts_sort_$TODAY.txt
+cp cleanmx_hosts_sort_$TODAY.txt /tmp/osint/rules/cleanmx_hosts_$TODAY.txt
+#
+#####
+#
+# Start the SIEM Files
+cat cleanmx_domains_malware_$TODAY.txt cleanmx_siem_working_$TODAY.txt
+cat cleanmx_domains_phishing_$TODAY.txt cleanmx_siem_working_$TODAY.txt
+cat cleanmx_domains_defaced_$TODAY.txt cleanmx_siem_working_$TODAY.txt
+cat cleanmx_siem_working_$TODAY.txt | sort | uniq >> cleanmx_siem_$TODAY.txt
+while read i; do
+        echo "$i," >> cleanmx_siem_domains_$TODAY.txt
+done < cleanmx_siem_$TODAY.txt
+cp cleanmx_siem_domains_$TODAY.txt /tmp/osint/rules/cleanmx_siem_domains_$TODAY.txt
+#
+while read i; do
+	echo "$i," >> cleanmx_siem_ipv4_$TODAY.txt
+done < cleanmx_ipv4_malware_$TODAY.txt
+cp cleanmx_siem_ipv4_$TODAY.txt /tmp/osint/rules/cleanmx_siem_ipv4_$TODAY.txt
+#
+#####
+#
 
 
 #
