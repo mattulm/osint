@@ -59,6 +59,8 @@ cat feodo_domain_master_$TODAY.txt | awk -F. '{ if ($(NF-1) == "co") printf $(NF
 #
 #
 # Make the Windows host file, the SIEM domain file, start the hosts.deny file.
+echo "# feodo_hosts_$TODAY.txt" >> feodo_hosts_$TODAY.txt
+echo "# feodo_hostsdeny_$TODAY.deny" >> feodo_hostsdeny_$TODAY.deny
 while read i; do
 	echo "127.0.0.1     www.$i, $i" >> feodo_hosts_$TODAY.txt;
 	echo "$i, " >> feodo_siem_domains_$TODAY.csv
@@ -117,7 +119,12 @@ cat feodo_ipv4_old.txt | sort | uniq >> feodo_ipv4_archive_$TODAY.txt
 # Clean up some old files.
 tar zcf feodo_hashes_$TODAY.tgz *.html
 rm -rf *.html
-
+#
+# Move all of our files to a better location
+cd /tmp/osint/rules
+cp feodo*.txt /home/osint/rules
+cd /tmp/osint/hashes
+cp *.txt /home/osint/hashes
 
 #
 # EOF

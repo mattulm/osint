@@ -47,10 +47,10 @@ wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/bloc
 
 #
 ##### Move the files we are not going to modify
-cp spyeye_squid_$TODAY.txt /tmp/osint/rules/spyeye_squid_$TODAY.txt
-cp spyeye_iptables_$TODAY.txt /tmp/osint/rules/spyeye_iptables_$TODAY.txt
-cp spyeye_hostsfile_$TODAY.txt /tmp/osint/rules/spyeye_hostsfile_$TODAY.txt
-cp spyeye_hostsdeny_$TODAY.txt /tmp/osint/rules/spyeye_hostsdeny_$TODAY.txt
+cat spyeye_squid_$TODAY.txt | sed '/^#/ d' >> /tmp/osint/rules/spyeye_squid_$TODAY.rules
+cat spyeye_iptables_$TODAY.txt | sed '/^#/ d' >> /tmp/osint/rules/spyeye_iptables_$TODAY.txt
+cat spyeye_hostsfile_$TODAY.txt | sed '/^#/ d' >>  /tmp/osint/rules/spyeye_hosts_$TODAY.txt
+cat spyeye_hostsdeny_$TODAY.txt | sed '/^#/ d' >> /tmp/osint/rules/spyeye_hostdeny_$TODAY.deny
 #
 ##### Some IP file stripping now
 # Strip the Spyeye file now
@@ -60,14 +60,27 @@ for i in spyeye_*_$TODAY.txt; do
 done
 # Sort and remove any duplicates
 cat spyeye_ip_working.txt | sort | uniq > spyeye_ipv4_$TODAY
-cp spyeye_ipv4_$TODAY.txt /tmp/osint/ipv4/spyeye_ipv4_botcc_$TODAY.txt
+cp spyeye_ipv4_$TODAY.txt /tmp/osint/ipv4/spyeye_ipv4_$TODAY.txt
+#
+# Make the SIEM IPv4 file now.
+while read i; do
+	echo "$i, " >> spyeye_siem_ipv4_$TODAY.csv
+done < spyeye_ipv4_$TODAY.txt
+cp spyeye_siem_ipv4_$TODAY.csv /tmp/osint/rules/spyeye_siem_ipv4_$TODAY.csv
 #
 #########################################
 # Some domain file stripping now
 sed '/^#/ d' spyeye_domain_$TODAY.txt >> spyeye_domain_master_$TODAY.txt
-cp spyeye_domain_master_$TODAY /tmp/osint/domains/spyeye_domains_botcc_$TODAY.txt
+cp spyeye_domain_master_$TODAY /tmp/osint/domains/spyeye_domains_$TODAY.txt
+#
+# Make the SIEM domain file now.
+while read i; do
+	echo "$i, " >> spyeye_siem_domains_$TODAY.csv
+done < spyeye_domain_master_$TODAY
+cp spyeye_siem_domains_$TODAY.csv /tmp/osint/rules/spyeye_siem_domains_$TODAY.csv
 #
 #########################################
+#
 while read p; do
 	wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/monitor.php?host=$p -O spyeye_hashes_$p.html
 	sleep 13;
@@ -98,7 +111,20 @@ cat spyeye_ipv4_old_$TODAY.txt | sort | uniq >> spyeye_ipv4_archive_$TODAY.txt
 #
 cp spyeye_sha256_$TODAY.txt /tmp/osint/hashes/spyeye_sha256_$TODAY.txt
 cp spyeye_md5_$TODAY.txt /tmp/osint/hashes/spyeye_md5_$TODAY.txt
-cp spyeye_ipv4_archive_$TODAY.txt /tmp/osint/ipv4/spyeye_ipv4_botcc_archive_$TODAY.txt
+cp spyeye_ipv4_archive_$TODAY.txt /tmp/osint/ipv4/spyeye_ipv4_archive_$TODAY.txt
+
+#
+#####
+#
+# Clean up some old files.
+tar zcf spyeye_hashes_$TODAY.tgz *.html
+rm -rf *.html
+#
+# Move all of our files to a better location
+cd /tmp/osint/rules
+cp spyeye*.txt /home/osint/rules
+cd /tmp/osint/hashes
+cp *.txt /home/osint/hashes
 
 
 #
