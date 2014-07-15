@@ -11,6 +11,7 @@ SOURCES="/tmp/osint/sources"
 HEADER="Accept: text/html"
 UA21="Mozilla/5.0 Gecko/20100101 Firefox/21.0"
 UA22="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.13; ) Gecko/20101203"
+UA23="Mozilla/5.7 Gecko/20100101 Firefox/24.1"
 TODAY=$(date +"%Y-%m-%d")
 YESTD=$(date -d "1 day ago" '+%Y-%m-%d')
 if [ ! -d "/tmp/ossint/sources/virusign" ]; then
@@ -23,25 +24,20 @@ for i in "${datadirs[@]}"; do
 	fi
 done
 cd $SOURCES/virusign
-###############################################
+#
+#####
 # First let's grab some files from this site.
 mkdir -p /tmp/osint/hashes; cd /tmp/osint/hashes;
 wget --header="$HEADER" --user-agent="$UA21" "http://www.virusign.com/home.php?d=4&r=300&c=hashes&o=date&s=DESC&p=1" -O "virusign_detect1_$TODAY.txt"
-sleep 5; 
-mv /tmp/osint/hashes/home.* /tmp/osint/hashes/hashes_virusign_detect4_source_$TODAY.txt;
+sleep 3; 
 wget --header="$HEADER" --user-agent="$US22" "http://www.virusign.com/home.php?d=3&r=300&c=hashes&o=date&s=DESC&p=2" -O "virusign_detect2_$TODAY.txt"
-sleep 5;
-mv /tmp/osint/hashes/home.* /tmp/osint/hashes/hashes_virusign_detect3_source_$TODAY.txt;
+sleep 14;
 wget --header="$HEADER" --user-agent="$US22" "http://www.virusign.com/home.php?d=2&r=300&c=hashes&o=date&s=DESC&p=3" -O "virusign_detect3_$TODAY.txt"
-sleep 5;
-mv /tmp/osint/hashes/home.* /tmp/osint/hashes/hashes_virusign_detect2_source_$TODAY.txt
-wget --header="$HEADER" --user-agent="$US22" "http://www.virusign.com/home.php?d=1&r=300&c=hashes&o=date&s=DESC&p=4" -O "virusign_detect4_$TODAY.txt"
-sleep 5;
-mv /tmp/osint/hashes/home.* /tmp/osint/hashes/hashes_virusign_detect1_source_$TODAY.txt
-
-
-
-##################################################
+sleep 35;
+wget --header="$HEADER" --user-agent="$US23" "http://www.virusign.com/home.php?d=1&r=300&c=hashes&o=date&s=DESC&p=4" -O "virusign_detect4_$TODAY.txt"
+sleep 19;
+#
+#####
 # OK, now let's clean up the files a little, and 
 # SHA 256 hashes
 for f in virusign_*_$TODAY.txt; do

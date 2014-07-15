@@ -2,7 +2,7 @@
 #####
 # Description: Some information about the source
 #
-# Name: Feodo Bot TRacker
+# Name: Zeus Bot TRacker
 # Host: Abuse.ch (The Swiss Security Blog.)
 # Frequency: Daily
 # Types: IPv4, domain, hashes
@@ -33,7 +33,7 @@ wget --header ="$HEADER" --user-agent="$UA22" "https://zeustracker.abuse.ch/bloc
 cp zeus_squid_$TODAY.rules /tmp/osint/rules/zeus_squid_$TODAY.rules
 sleep 5;
 ###### Get the bad domains:
-wget --header="$HEADER" --user-agent="$UA21" "https://zeustracker.abuse.ch/blocklist.php?download=baddomains" -O "zeus_domain_$TODAY.txt"
+wget --header="$HEADER" --user-agent="$UA21" "https://zeustracker.abuse.ch/blocklist.php?download=baddomains" -O "zeus_domain_working_$TODAY.txt"
 sleep 7;
 # Zeus Tracker
 wget --header="$HEADER" --user-agent="$UA21" "https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist" -O "zeus_blocklist_$TODAY.txt"
@@ -47,11 +47,17 @@ wget --header="$HEADER" --user-agent="$UA22" "https://zeustracker.abuse.ch/monit
 #######################################
 ##### Some IP file stripping now
 # Strip the zeus file now
-for i in zeus_*_$TODAY; do
-	cat $i  | grep -E -o '(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)' >> zeus_ip_working.txt
+for i in zeus_*.txt; do
+	cat $i  | grep -E -o '(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)' >> zeus_ipv4_working.txt
 done
-cat zeus_ip_working.txt | grep -v '^#' | sort | uniq >> zeus_ip_$TODAY.txt
-cp zeus_ip_$TODAY.txt /tmp/osint/ipv4/zeus_ipv4_$TODAY.txt
+#
+# Just in case
+for i in zeus_*.rules; do
+	cat $i | grep -E -o '(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)' >> zeus_ipv4_working.txt
+done
+#
+cat zeus_ipv4_working.txt | grep -v '^#' | sort | uniq >> zeus_ipv4_$TODAY.txt
+cp zeus_ipv4_$TODAY.txt /tmp/osint/ipv4/zeus_ipv4_$TODAY.txt
 #
 # Let's make some files for our devices
 while read i; do
@@ -66,7 +72,7 @@ cp zeus_siem_ipv4_$TODAY.csv; /tmp/osint/rules/zeus_siem_ipv4_$TODAY.csv;
 ####################################################
 # Some domain file stripping now. This will remove
 # any line that startes with the comment character.
-sed '/^#/ d' zeus_domain_$TODAY.txt >> zeus_domain_$TODAY.txt
+cat zeus_domain_working_$TODAY.txt | sed '/^#/ d' >> zeus_domain_$TODAY.txt
 cp zeus_domain_$TODAY.txt /tmp/osint/domains/zeus_domain_$TODAY.txt
 while read i; do
 	echo "127.0.0.1     www.$i $i" >> zeus_hosts_$TODAY.txt;
