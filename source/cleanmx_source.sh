@@ -27,13 +27,13 @@ done
 #####################################
 cd $SOURCES/cleanmx
 # Grab some files form the internet
-wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/viruses" -O cleanmx_virus1_$TODAY.txt
+wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/viruses" -O "cleanmx_virus1_$TODAY.txt"
+sleep 7;
+wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/phishing.php" -O "cleanmx_phishing_$TODAY.txt"
 sleep 13;
-wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/phishing.php" -O cleanmx_phishing_$TODAY.txt
-sleep 13;
-wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/portals.php" -O cleanmx_defaced_$TODAY.txt
-sleep 13;
-wget --user-agent="$UA21" "http://support.clean-mx.de/clean-mx/viruses.php" -O cleanmx_virus2_$TODAY.txt
+wget --user-agent="$UA22" "http://support.clean-mx.de/clean-mx/portals.php" -O "cleanmx_defaced_$TODAY.txt"
+sleep 19;
+wget --user-agent="$UA21" "http://support.clean-mx.de/clean-mx/viruses.php" -O "cleanmx_virus2_$TODAY.txt"
 #
 #####
 # Let's grab some IP addresses from this file.
@@ -62,35 +62,34 @@ cp cleanmx_ipv4_defaced_$TODAY.txt /tmp/osint/ipv4/cleanmx_ipv4_defaced_$TODAY.t
 cp cleanmx_domains_defaced_$TODAY.txt /tmp/osint/domains/cleanmx_domains_defaced_$TODAY.txt
 #
 #
+cat cleanmx_ipv4_defaced_$TODAY.txt >> cleanmx_ipv4_working_$TODAY.txt
 
 #
 #####
 #
 # Start the Windows Host File
-cat cleanmx_domains_malware_$TODAY.txt cleanmx_hosts_working_$TODAY.txt
-cat cleanmx_domains_phishing_$TODAY.txt cleanmx_hosts_working_$TODAY.txt
+cat cleanmx_domains_malware_$TODAY.txt >> cleanmx_hosts_working_$TODAY.txt
+cat cleanmx_domains_phishing_$TODAY.txt >> cleanmx_hosts_working_$TODAY.txt
+cat cleanmx_domains_defaced_$TODAY.txt >> cleanmx_hosts_working_$TODAY.txt
 cat cleanmx_hosts_working_$TODAY.txt | sort | uniq >> cleanmx_hosts_sort_$TODAY.txt
 while read i; do
-        echo "127.0.0.1     www.$i, $i "; >> cleanmx_hosts_$TODAY.txt
+        echo "127.0.0.1     www.$i $i "; >> cleanmx_hosts_$TODAY.txt
+	echo "$i, " >> cleanmx_siem_domains_$TODAY.csv
+	echo "ALL:    .$i" >> cleanmx_hostsdeny_$TODAY.deny
 done < cleanmx_hosts_sort_$TODAY.txt
 cp cleanmx_hosts_sort_$TODAY.txt /tmp/osint/rules/cleanmx_hosts_$TODAY.txt
-#
-#####
-#
-# Start the SIEM Files
-cat cleanmx_domains_malware_$TODAY.txt cleanmx_siem_working_$TODAY.txt
-cat cleanmx_domains_phishing_$TODAY.txt cleanmx_siem_working_$TODAY.txt
-cat cleanmx_domains_defaced_$TODAY.txt cleanmx_siem_working_$TODAY.txt
-cat cleanmx_siem_working_$TODAY.txt | sort | uniq >> cleanmx_siem_$TODAY.txt
-while read i; do
-        echo "$i," >> cleanmx_siem_domains_$TODAY.txt
-done < cleanmx_siem_$TODAY.txt
-cp cleanmx_siem_domains_$TODAY.txt /tmp/osint/rules/cleanmx_siem_domains_$TODAY.txt
+cp cleanmx_siem_domains_$TODAY.csv /tmp/osint/rules/cleanmx_siem_domains_$TODAY.csv
 #
 while read i; do
 	echo "$i," >> cleanmx_siem_ipv4_$TODAY.txt
+	echo "ALL:    $i" >> cleanmx_hostsdeny_$TODAY.deny
+	echo "iptables -A INPUT -s $i -j DROP LOG --log-prefix 'Clean MX Record' " >> cleanmx_iptables_$TODAY.sh
+	echo "iptables -A OUTPUT -s $i -j DROP LOG --log-prefix 'Clean MX Record' " >> cleanmx_iptables_$TODAY.sh
+	echo "iptables -A FORWARD -s $i -j DROP LOG --log-prefix 'Clean MX REcord' " >> cleanmx_iptables_$TODAY.sh
 done < cleanmx_ipv4_malware_$TODAY.txt
 cp cleanmx_siem_ipv4_$TODAY.txt /tmp/osint/rules/cleanmx_siem_ipv4_$TODAY.txt
+cp cleanmx_hostsdeny_$TODAY.deny /tmp/osint/rules/cleanmx_hostsdeny_$TODAY.deny
+cp cleanmx_iptables_$TODAY.sh /tmp/osint/rules/cleanmx_iptables_$TODAY.sh
 #
 #####
 #

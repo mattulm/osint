@@ -62,7 +62,7 @@ cat feodo_domain_master_$TODAY.txt | awk -F. '{ if ($(NF-1) == "co") printf $(NF
 echo "# feodo_hosts_$TODAY.txt" >> feodo_hosts_$TODAY.txt
 echo "# feodo_hostsdeny_$TODAY.deny" >> feodo_hostsdeny_$TODAY.deny
 while read i; do
-	echo "127.0.0.1     www.$i, $i" >> feodo_hosts_$TODAY.txt;
+	echo "127.0.0.1     www.$i $i" >> feodo_hosts_$TODAY.txt;
 	echo "$i, " >> feodo_siem_domains_$TODAY.csv
 	echo "ALL:    .$i" >> feodo_hostsdeny_$TODAY.deny
 done < feodo_domain_stripped_$TODAY.txt

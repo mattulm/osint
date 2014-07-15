@@ -100,31 +100,6 @@ echo "http://www.malwareurl.com/" >> malwebnodes.log
 wget "http://www.malwareurl.com/" -O malwareurl.list
 echo "-----" >> malwebnodes.log
 # we are going to grab another listing of sites, and what not,
-# that we will have to pull a few pages from. I am also building in a simple wait mechanism between
-# each pull so that we do not overload the server, and get our IP banned from being able to use this.
-# you can adjust this sleep timer to speed up or slow down the pulls.
-echo "http://malc0de.com/database/" >> malwebnodes.log
-wget "http://malc0de.com/database/" -O malcode1.list
-/bin/sleep 15 >> malwebnodes.log
-wget "http://malc0de.com/database/?&page=2" -O malcode2.list
-/bin/sleep 15 >> malwebnodes.log
-wget "http://malc0de.com/database/?&page=3" -O malcode3.list
-/bin/sleep 15 >> malwebnodes.log
-wget "http://malc0de.com/database/?&page=4" -O malcode4.list
-/bin/sleep 15 >> malwebnodes.log
-wget "http://malc0de.com/database/?&page=5" -O malcode5.list
-/bin/sleep 15 >> malwebnodes.log
-wget "http://malc0de.com/database/?&page=6" -O malcode6.list
-/bin/sleep 15 >> malwebnodes.log
-wget "http://malc0de.com/database/?&page=7" -O malcode7.list
-/bin/sleep 15 >> malwebnodes.log
-wget "http://malc0de.com/database/?&page=8" -O malcode8.list
-/bin/sleep 15 >> malwebnodes.log
-wget "http://malc0de.com/database/?&page=9" -O malcode9.list
-echo "-----" >> malwebnodes.log
-# End of List download Section
-echo "---------------" >> malwebnodes.log
-echo "---------------" >> malwebnodes.log
 
 
 # Now lets start gathering all of our lists and iterating through all of them using while, so we can

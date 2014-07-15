@@ -13,6 +13,8 @@ SOURCES="/tmp/osint/sources"
 HEADER="Accept: text/html"
 UA21="Mozilla/5.0 Gecko/20100101 Firefox/21.0"
 UA22="Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.6; en-US; rv:1.9.2.13; ) Gecko/20101203"
+UA23="Mozilla/6.0 (Macintosh; U; Intel Mac OS X 10.7; en-US; rv:1.9.3.7; ) Gecko/20110417"
+UA24="Mozilla/6.1 Gecko/20100101 Firefox/24.1"
 TODAY=$(date +"%Y-%m-%d")
 if [ ! -d "/tmp/ossint/sources/spyeye" ]; then
         mkdir -p /tmp/osint/sources/spyeye;
@@ -27,22 +29,22 @@ done
 cd $SOURCES/spyeye;
 ###################################
 ###### Get the bad domains:
-wget --header="$HEADER" --user-agent="$UA21" https://spyeyetracker.abuse.ch/blocklist.php?download=domainblocklist -O spyeye_domain_$TODAY.txt
-sleep 13;
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA21" https://spyeyetracker.abuse.ch/blocklist.php?download=domainblocklist -O spyeye_domain_$TODAY.txt
+sleep 4;
 ###### Get the IP lists
-wget --header="$HEADER" --user-agent="$UA21" https://spyeyetracker.abuse.ch/blocklist.php?download=ipblocklist -O spyeye_blocklist_$TODAY.txt
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA21" https://spyeyetracker.abuse.ch/blocklist.php?download=ipblocklist -O spyeye_blocklist_$TODAY.txt
+sleep 15;
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA23" https://spyeyetracker.abuse.ch/monitor.php?browse=binaries -O spyeye_binaries_$TODAY.txt
+sleep 11;
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/monitor.php?browse=configs -O spyeye_configs_$TODAY.txt
+sleep 7;
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA21" https://spyeyetracker.abuse.ch/blocklist.php?download=squidblocklist -O spyeye_squid_$TODAY.txt
+sleep 19;
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA23" https://spyeyetracker.abuse.ch/blocklist.php?download=iptablesblocklist -O spyeye_iptables_$TODAY.txt
 sleep 13;
-wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/monitor.php?browse=binaries -O spyeye_binaries_$TODAY.txt
-sleep 13;
-wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/monitor.php?browse=configs -O spyeye_configs_$TODAY.txt
-sleep 13;
-wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/blocklist.php?download=squidblocklist -O spyeye_squid_$TODAY.txt
-sleep 13;
-wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/blocklist.php?download=iptablesblocklist -O spyeye_iptables_$TODAY.txt
-sleep 13;
-wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/blocklist.php?download=hostfile -O spyeye_hostsfile_$TODAY.txt
-sleep 13;
-wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/blocklist.php?download=hostsdeny -O spyeye_hostsdeny_$TODAY.txt
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/blocklist.php?download=hostfile -O spyeye_hostsfile_$TODAY.txt
+sleep 21;
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA23" https://spyeyetracker.abuse.ch/blocklist.php?download=hostsdeny -O spyeye_hostsdeny_$TODAY.txt
 
 
 #
@@ -82,13 +84,13 @@ cp spyeye_siem_domains_$TODAY.csv /tmp/osint/rules/spyeye_siem_domains_$TODAY.cs
 #########################################
 #
 while read p; do
-	wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/monitor.php?host=$p -O spyeye_hashes_$p.html
+	wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/monitor.php?host=$p -O spyeye_hashes_$p.html
 	sleep 13;
 done < spyeye_ipv4_$TODAY.txt
 #
 # Spyeye domains now.
 while read p; do
-        wget --header="$HEADER" --user-agent="$UA22" https://spyeyetracker.abuse.ch/monitor.php?host=$p -O spyeye_hashes_$p.html
+        wget --no-check-certificate --header="$HEADER" --user-agent="$UA24" https://spyeyetracker.abuse.ch/monitor.php?host=$p -O spyeye_hashes_$p.html
         sleep 13;
 done < spyeye_domain_master_$TODAY.txt
 #
@@ -119,12 +121,6 @@ cp spyeye_ipv4_archive_$TODAY.txt /tmp/osint/ipv4/spyeye_ipv4_archive_$TODAY.txt
 # Clean up some old files.
 tar zcf spyeye_hashes_$TODAY.tgz *.html
 rm -rf *.html
-#
-# Move all of our files to a better location
-cd /tmp/osint/rules
-cp spyeye*.txt /home/osint/rules
-cd /tmp/osint/hashes
-cp *.txt /home/osint/hashes
 
 
 #
