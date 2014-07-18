@@ -1,11 +1,8 @@
 #!/bin/bash
 #####
 # Description: Some information about the source
-#
-# Name: Feodo Bot TRacker
-# Host: Abuse.ch (The Swiss Security Blog.)
+# Name: DSHield
 # Frequency: Daily
-# Types: IPv4, domain, hashes
 #####
 # Some Variables
 HOME="/tmp/osint"

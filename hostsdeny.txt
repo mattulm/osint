@@ -1,7 +1,0 @@
-https://spyeyetracker.abuse.ch/blocklist.php?download=hostsdeny
-https://zeustracker.abuse.ch/blocklist.php?download=hostsdeny
-
-
-
-
-
