@@ -26,16 +26,9 @@ for i in "${datadirs[@]}"; do
 done
 cd $SOURCES/dshield
 ###########################################################
-wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://www.dshield.org/ipsascii.html?limit=1000 -O "dshield_ipsascii_$TODAY.txt"
-sleep 7;
-wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://isc.sans.edu/feeds/suspiciousdomains_Medium.txt -O "dshield_domains_working_$TODAY.txt"
-sleep 15;
-wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://isc.sans.edu/feeds/suspiciousdomains_High.txt -O "dshield_hostfile_working_$TODAY.txt"
-sleep 13;
+wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://www.dshield.org/ipsascii.html?limit=1000
 wget --no-check-certificate --header="$HEADER" --user-agent="$UA22" https://isc.sans.edu/block.txt -O "dshield_netblocks_$TODAY.txt"
 cp dshield_netblocks_$TODAY.txt /tmp/osint/rules/dshield_netblocks_$TODAY.txt
-#
-#####
 #
 cat dshield_ipsascii_$TODAY.txt | sed '/^#/ d' | sed 's/\.0\{1,2\}/\./g' | sed 's/^0\{1,2\}//' | grep -E -o '(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-5][0-9]|[01]?[0-9][0-9]?)' | sort | uniq >> dshield_ipv4_master_$TODAY.txt
 cp dshield_ipv4_master_$TODAY.txt /tmp/osint/ipv4/dshield_ipv4_$TODAY.txt
